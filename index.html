@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ahsay hash guesser</title>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+  <meta name="viewport" content="width=device-width">
+  <script type="text/javascript" src="md5.js"></script>
+  <script type="text/javascript">
+    function foundpass(correctPasswd){
+      guess = document.getElementById("guess")
+      guess.value = correctPasswd
+      guess.readOnly = true
+
+      hashgoal = document.getElementById("hashgoal")
+      hashgoal.readOnly = true
+
+      document.body.classList.add("pwfound")
+    }
+    function hash(text){
+      return MD5.base64(text)+'=='
+    }
+    function checkhashes(){
+      hashGoal = document.getElementById("hashgoal").value
+      guess = document.getElementById("guess").value
+      guessHashes = document.getElementById("guesshashes")
+      rehashCount = 4
+      
+      failedHashes = []
+      for (i = 0; i < rehashCount; i++) {
+        hashedGuess = hash(guess)
+        if (hashGoal==hashedGuess) {
+          foundpass(guess)
+          return
+        } else {
+          failedHashes.push(hashedGuess)
+        }
+        guess = hashedGuess
+      }
+
+      guessHashes.innerHTML = '';
+      for (i = 0; i < failedHashes.length; i++) {
+        x = document.createElement("span");
+        t = document.createTextNode(failedHashes[i]);
+        x.appendChild(t);
+        guessHashes.appendChild(x)
+      }
+    }
+  </script>
+  <style type="text/css">
+    :focus { outline-width: 0; }
+    ::placeholder { color: #d0d0d0 }
+    body { 
+      background: #FAF0F3;
+      font-family: sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 10px;
+    }
+    p.subtext {
+      color: #888;
+      font-size: .8em;
+    }
+    .inputgroup {
+      max-width: 600px;
+      padding: .5em 0;
+      margin: auto;
+    }
+    .inputgroup > label,
+    .inputgroup > input {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .inputgroup > label {
+      text-transform: uppercase;
+      font-size: .7em;
+      font-weight: bold;
+    }
+    #hashgoal, 
+    #guess {
+      border-width: 0 0 2px 0;
+      padding: .5em;
+      font-size: 1.2em;
+    }
+    #hashgoal:invalid {
+      background-color: #ffd0d0;
+    }
+    #guesshashes span {
+      display: inline-block;
+      font-size: .5em;
+      color: #777;
+      margin: 0 4px;
+      font-family: monospace;
+    }
+    body.pwfound { background: #DAFFDA; }
+    body.pwfound input {
+      background: #d0f0d0;
+      color: #404f40;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Ahsay hashed password guesser</h1>
+  <p>
+    Paste your known hash and then type as many passwords into the "Guess" 
+    field. Your guess will be hashed (and rehashed 3 more times). If the known
+    hash matches any of the guess hashes you will be notified and futher input
+    will be prevented.
+  </p>
+  <p>
+    Each individual keystroke triggers a test, and there is no limit to the
+    number of attempts you may make. Processing is done entirely within your
+    browswer, and never sent elsewhere.
+  </p>
+  <div class="inputgroup">
+    <label for="hashgoal">Hash</label>
+    <input type="text" id="hashgoal" onkeyup="checkhashes()" 
+        placeholder="9LpKiDXSDU+FobVeW29l2A==" pattern="[a-zA-Z0-9/\+]{22}=="/>
+  </div>
+  <div class="inputgroup">
+    <label for="guess">Guess</label>
+    <input type="text" id="guess" onkeyup="checkhashes()" 
+        placeholder="password"/>
+    <div id="guesshashes"></div>
+  </div>
+  <p class="subtext">
+    <b>Tip:</b> try <code>X03MO1qnZdYdgyfeuILPmQ==</code> and guess <i>password</i>
+  </p>
+</body>
+</html>
